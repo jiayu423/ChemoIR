@@ -1,8 +1,8 @@
 from utils.ProcessData import *
 
-run1_spec = loadSpec('Data/sodium salt mixture/run1/', [[400, 1200]], [5, 13])
+run1_spec = loadSpec('Data/sodium salt mixture/validation/', [[400, 1200]], [8, 16])
 
-run1_temp = loadTemperature('Data/sodium salt mixture/temp_run1.xlsx')
+run1_temp = loadTemperature('Data/sodium salt mixture/temp_test.xlsx')
 selected_temp = []
 for i in range(run1_spec.shape[0]):
 

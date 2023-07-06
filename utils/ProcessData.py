@@ -79,23 +79,28 @@ def getErrorMatX(SVE, isPlot=False):
     return xErrMat
 
 
-# def plot3D(data):
-#
-#     df = pd.DataFrame(data=dataT[:, [0, 1, 2]], columns=['PC1', 'PC2', 'PC3'])
-#     compound = 'time'
-#
-#     fig = plt.figure(figsize=(8, 6))
-#     ax = Axes3D(fig, auto_add_to_figure=False)
-#     fig.add_axes(ax)
-#     x = df['PC1']
-#     y = df['PC2']
-#     z = df['PC3']
-#     c = [i for i in range(dataT.shape[0])]
-#     cb = ax.scatter(x, y, z, c=c, cmap='coolwarm')
-#     index = 123
-#     ax.scatter(x[index], y[index], z[index], c='r', marker='x')
-#     ax.set_xlabel('pc1')
-#     ax.set_ylabel('pc2')
-#     ax.set_zlabel('pc3')
-#     plt.colorbar(cb, shrink=0.5, label='time')
-#     plt.show()
+def loadSaltData(specPath, tempPath, wavenumberRange, nameIndex, dataRange, training_conc):
+
+    # 3 training sets with different stir rate
+
+    spec = loadSpec(specPath, wavenumberRange, nameIndex)
+    temp = loadTemperature(tempPath)
+
+    selected_temp = []
+    for i in range(spec.shape[0]):
+        dt = np.abs(temp[:, 0] - spec[i, -1])
+        ind = np.where(dt == dt.min())[0][0]
+        print(spec[i, -1], temp[ind, 0])
+        selected_temp.append(temp[ind, 1])
+
+    all_ = np.hstack((spec, np.array(selected_temp).reshape(-1, 1)))
+
+    spec = []
+    conc = []
+    for i, range_ in enumerate(dataRange):
+        spec.append(all_[range_[0]:range_[1], :])
+        conc.append(np.repeat(training_conc[i, :].reshape(1, -1), range_[1] - range_[0], axis=0))
+    spec = np.vstack(spec)
+    conc = np.vstack(conc)
+
+    return spec, conc
